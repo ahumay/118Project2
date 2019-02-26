@@ -1,5 +1,5 @@
 # CS118 Project 2
-
+hello mate
 ## Makefile
 
 This provides a couple make targets for things.
