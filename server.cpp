@@ -105,7 +105,7 @@ int main(int argc, char ** argv){
     ehandler('r', recsize);
     Packet * p1 = new Packet((void*) buffer, recsize);
 
-    // drop any unknown connections, packets that are out of order, or SYN packets for already established connections
+    // drop any unknown connection packets
     if ( (p1->m_connectionID < 0) || (p1->m_connectionID > 20) || 
       ((p1->m_connectionID != 0) && (activeConnections.count(p1->m_connectionID) == 0))) {
         std::cout << "DROP " << p1->m_sequenceNum << " " << p1->m_ackNum << " " << p1->m_connectionID;
@@ -177,7 +177,8 @@ int main(int argc, char ** argv){
     else if(p1->m_finFlag && !droppedThisPacket) {
       // send FIN ACK 
       client_struct * c = clients[p1->m_connectionID];
-      Packet p2 = Packet(c->last_packet->m_ackNum, p1->m_sequenceNum + 1, p1->m_connectionID, 1, 0, 1, NULL);
+      // CHANGED
+      Packet p2 = Packet(4322 /*c->last_packet->m_ackNum*/, p1->m_sequenceNum + 1, p1->m_connectionID, 1, 0, 1, NULL);
       c->next_expected_seqNum++; // this line
       sent_fin[p1->m_connectionID] = true;
       sendto(sockFD, (char*) p2.create_network_packet(), 12, 0,(struct sockaddr*)&sa, sizeof sa); 
