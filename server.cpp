@@ -270,7 +270,7 @@ int main(int argc, char ** argv){
           if (recsize <= 12){ 
             continue;
           } else { 
-            Packet p2 = Packet(p1->m_ackNum, newAck, p1->m_connectionID, 1, 0, 0, NULL);
+            Packet p2 = Packet(4322, newAck, p1->m_connectionID, 1, 0, 0, NULL);
             sendto(sockFD, (char*) p2.create_network_packet(), 12, 0,(struct sockaddr*)&sa, sizeof sa);        
             std::cout << "SEND " << p2.m_sequenceNum << " " << newAck << " " << p2.m_connectionID;
             if (p2.m_ackFlag == 1){ std::cout << " ACK"; }
