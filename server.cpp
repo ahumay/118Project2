@@ -144,12 +144,6 @@ int main(int argc, char ** argv){
       activeConnections.insert(p1->m_connectionID);
       next_connectionID++;
 
-      // create new file to write to
-      std::fstream* newFile = new std::fstream;
-      // new std::fstream newFile;
-      std::string clientDataFilePath = "./" + FILEDIR + "/" + std::to_string(p1->m_connectionID) + ".file";
-      newFile -> open(clientDataFilePath, std::fstream::in | std::fstream::out | std::fstream::app);
-
       // set timer
       timeval * cur = new timeval;
       gettimeofday(cur, 0);
@@ -158,7 +152,7 @@ int main(int argc, char ** argv){
       client_struct* a = new client_struct;
       a->last_packet = p1;
       a->last_received = cur;
-      a->file = newFile;
+      a->file = NULL;
       a->next_expected_seqNum = (p1->m_sequenceNum + 1);
       clients[p1->m_connectionID] = a;
 
@@ -230,6 +224,15 @@ int main(int argc, char ** argv){
       else {
         if(sent_fin[p1->m_connectionID] == false) {
           // write data to file
+          if (clients[p1->m_connectionID]->file == NULL){
+            // create new file to write to
+            std::fstream* newFile = new std::fstream;
+            // new std::fstream newFile;
+            std::string clientDataFilePath = "./" + FILEDIR + "/" + std::to_string(p1->m_connectionID) + ".file";
+            newFile -> open(clientDataFilePath, std::fstream::in | std::fstream::out | std::fstream::app);
+
+            clients[p1->m_connectionID]->file = newFile;
+          } 
           std::fstream * fileout = clients[p1->m_connectionID]->file;
           fileout -> write(p1->m_data, (int)recsize - 12);
           flush(*fileout);

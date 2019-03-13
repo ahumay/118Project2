@@ -223,6 +223,8 @@ int main(int argc, char ** argv){
       ackNum = p1->m_sequenceNum;
       byte_last_acked = p1->m_ackNum;
 
+      // 
+
       //updating congestion control window
       if(congestion_window < SS_thresh)
       {
@@ -290,28 +292,7 @@ int main(int argc, char ** argv){
         if (bytesRead < 0){
           ehandler('r', -1);
         }
-        // DO WE NEED THIS RECEIVED RECENTLY 
         Packet outgoingPacket;
-        // if(receivedRecently) {
-        //   outgoingPacket = Packet(sequenceNum, 0, connectionID, 0, 0, 0, fileData);
-        //   sizeMap[sequenceNum] = bytesRead + 12;
-        //   void* netOutgoingPacket = outgoingPacket.create_network_packet();
-        //   sendto(sockFD, (void*)netOutgoingPacket, (bytesRead + 12), 0,(struct sockaddr*)&sa, sizeof sa);
-        //   sequenceNum += bytesRead;
-        //   if (sequenceNum > MAX_SEQUENCE_NUMBER){
-        //     sequenceNum = sequenceNum - MAX_SEQUENCE_NUMBER - 1;
-        //   } 
-        //   receivedRecently = false;
-        // } else {
-        //   outgoingPacket = Packet(sequenceNum, 0, connectionID, 0, 0, 0, fileData);
-        //   sizeMap[sequenceNum] = bytesRead + 12;
-        //   void* netOutgoingPacket = outgoingPacket.create_network_packet();
-        //   sendto(sockFD, (void*)netOutgoingPacket, (bytesRead + 12), 0,(struct sockaddr*)&sa, sizeof sa);
-        //   sequenceNum += bytesRead;
-        //   if (sequenceNum > MAX_SEQUENCE_NUMBER){
-        //     sequenceNum = sequenceNum - MAX_SEQUENCE_NUMBER - 1;
-        //   } 
-        // }
 
         outgoingPacket = Packet(sequenceNum, 0, connectionID, 0, 0, 0, fileData);
         sizeMap[sequenceNum] = bytesRead + 12;
@@ -334,7 +315,7 @@ int main(int argc, char ** argv){
     {
       if(expired)
       {
-        std::cout << "We have expired and we will retransmit " << packets_in_network.size() << " packets " << std::endl << std::endl;
+        // std::cout << "We have expired and we will retransmit " << packets_in_network.size() << " packets " << std::endl << std::endl;
         //std::cout << "We have timed out and the current size of the restransmit queue is " << packets_in_network.size() << std::endl
         //<< std::endl<< std::endl<< std::endl<< std::endl<< std::endl;
         SS_thresh = congestion_window / 2;
@@ -491,7 +472,7 @@ bool checkTimeExpired(timeval t1, bool is10SecTimeout){
     timeval result;
     timersub(&cur, &t1, &result);
     if (result.tv_sec >= 10){
-      // std::cout << "in checkTimeExpired and 10 seconds have passed" << std::endl;
+      std::cout << "ERROR: No response from server" << std::endl;
       closeClient();
     }
   } else {
@@ -572,7 +553,7 @@ void printPacket(Packet current, bool send, int congestion_window, int SS_thresh
     if (current.m_ackFlag == 1){ std::cout << " ACK"; }
     if (current.m_synFlag == 1){ std::cout << " SYN"; }
     if (current.m_finFlag == 1){ std::cout << " FIN"; }
-    if (retransmit){ std::cout << " RETRANSMIT"; }
+    if (retransmit){ std::cout << " DUP"; }
     std::cout << std::endl;
   } else
   {
